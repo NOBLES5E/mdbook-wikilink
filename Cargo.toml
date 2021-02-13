@@ -1,0 +1,15 @@
+[package]
+name = "mdbook-wikilink"
+version = "0.1.2"
+authors = ["Leo Silva Souza <leovano@protonmail.com>"]
+edition = "2018"
+
+[lib]
+name = "wikilink"
+
+[dependencies]
+clap = "*"
+mdbook = "*"
+regex = "*"
+serde = "*"
+serde_json = "*"
