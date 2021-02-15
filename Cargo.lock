@@ -795,7 +795,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "mdbook-autotitle"
+name = "mdbook-wikilink"
 version = "0.1.2"
 dependencies = [
  "clap",
