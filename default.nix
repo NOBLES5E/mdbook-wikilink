@@ -4,6 +4,7 @@ let
 in pkgs.rustPlatform.buildRustPackage rec {
   name = "mdbook-wikilink"; 
   src = ./.;
+  doCheck = false;
   Cmd = [ "mdbook-wikilink" ];
   cargoSha256 = "0mlasy0gbj9nchgkprpmsyrbwms4y92djclyyvmqwmi5ppyzjnh5";
 }
