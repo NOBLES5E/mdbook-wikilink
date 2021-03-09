@@ -5,11 +5,7 @@ use mdbook::{
     BookItem,
 };
 use regex::{Captures, Regex};
-use std::{
-    collections::HashMap,
-    io::{self},
-    path::{Path, PathBuf},
-};
+use std::{collections::HashMap, io};
 
 pub fn handle_preprocessing(pre: impl Preprocessor) -> Result<(), Error> {
     // let mut input = String::new();
@@ -61,16 +57,14 @@ impl Preprocessor for AutoTitle {
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
-        let root = PathBuf::from(".");
+        let root = ".";
 
         let chapters = book
             .iter()
             .filter_map(chapter)
             .filter_map(|it| {
-                Some((
-                    root.join(it.path.as_ref()?.file_stem().unwrap()),
-                    it.name.clone(),
-                ))
+                let path = it.path.as_ref()?.file_stem().unwrap().to_str().unwrap();
+                Some((root.to_owned() + "/" + path, it.name.clone()))
             })
             .collect::<HashMap<_, _>>();
 
@@ -84,10 +78,10 @@ impl Preprocessor for AutoTitle {
                         let file = it.get(1).unwrap().as_str().trim();
                         let title = it.get(2).map(|it| it.as_str().trim());
 
-                        let file = root.join(Path::new(file));
+                        let file = root.to_owned() + "/" + file;
                         let title = title.unwrap_or_else(|| chapters.get(&file).unwrap().trim());
 
-                        format!("[{}]({}.md)", title, file.to_str().unwrap())
+                        format!("[{}]({}.md)", title, file)
                     })
                     .to_string();
             }
