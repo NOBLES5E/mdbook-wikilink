@@ -45,14 +45,11 @@
             {
               defaultCrateOverrides = pkgs.defaultCrateOverrides // {
                 ${name} = oldAttrs: {
-                  inherit buildInputs nativeBuildInputs;
+                  inherit nativeBuildInputs;
                 };
               };
             };
 
-          buildInputs = with pkgs; [
-            #openssl.dev 
-          ];
           nativeBuildInputs = with pkgs; [ 
             # rust
             rustc 
@@ -79,7 +76,7 @@
           # `nix develop`
           devShell = pkgs.mkShell
             {
-              inherit buildInputs nativeBuildInputs;
+              inherit nativeBuildInputs;
               RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
             };
         }
