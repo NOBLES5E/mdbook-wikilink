@@ -1,10 +1,13 @@
-let
-  sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs {};
-in pkgs.rustPlatform.buildRustPackage rec {
-  name = "mdbook-wikilink"; 
-  src = ./.;
-  doCheck = false;
-  Cmd = [ "mdbook-wikilink" ];
-  cargoSha256 = "0mlasy0gbj9nchgkprpmsyrbwms4y92djclyyvmqwmi5ppyzjnh5";
-}
+(import
+  (
+    let
+      lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+    in
+    fetchTarball {
+      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
+      sha256 = lock.nodes.flake-compat.locked.narHash;
+    }
+  )
+  {
+    src = ./.;
+  }).defaultNix
