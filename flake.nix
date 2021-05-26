@@ -28,9 +28,6 @@
             overlays = [
               rust-overlay.overlay
               (self: super: {
-                # Because rust-overlay bundles multiple rust packages into one
-                # derivation, specify that mega-bundle here, so that crate2nix
-                # will use them automatically.
                 rustc = self.rust-bin.stable.latest.default;
                 cargo = self.rust-bin.stable.latest.default;
               })
@@ -49,15 +46,22 @@
               defaultCrateOverrides = pkgs.defaultCrateOverrides // {
                 ${name} = oldAttrs: {
                   inherit buildInputs nativeBuildInputs;
-                } // buildEnvVars;
+                };
               };
             };
 
-          buildInputs = with pkgs; [ openssl.dev ];
-          nativeBuildInputs = with pkgs; [ rustc cargo pkgconfig nixpkgs-fmt ];
-          buildEnvVars = {
-            PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
-          };
+          buildInputs = with pkgs; [
+            #openssl.dev 
+          ];
+          nativeBuildInputs = with pkgs; [ 
+            # rust
+            rustc 
+            cargo 
+            rust-analyzer 
+
+            # tools
+            nixpkgs-fmt 
+          ];
         in
         rec {
           packages.${name} = project.rootCrate.build;
@@ -77,7 +81,8 @@
             {
               inherit buildInputs nativeBuildInputs;
               RUST_SRC_PATH = "${pkgs.rust.packages.stable.rustPlatform.rustLibSrc}";
-            } // buildEnvVars;
+            };
         }
       );
 }
+
