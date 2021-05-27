@@ -39,21 +39,21 @@ fn chapter(it: &BookItem) -> Option<&Chapter> {
     }
 }
 
-pub struct AutoTitle {
+pub struct Wikilink {
     re: Regex,
 }
 
-impl AutoTitle {
-    pub fn new() -> AutoTitle {
-        AutoTitle {
+impl Wikilink {
+    pub fn new() -> Wikilink {
+        Wikilink {
             re: Regex::new(r"\[\[([^\]\|]+)(?:\|([^\]]+))?\]\]").unwrap(),
         }
     }
 }
 
-impl Preprocessor for AutoTitle {
+impl Preprocessor for Wikilink {
     fn name(&self) -> &str {
-        "autotitle-preprocessor"
+        "mdbook-preprocessor"
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
