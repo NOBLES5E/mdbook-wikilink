@@ -1,11 +1,11 @@
-use wikilink::{handle_preprocessing, Wikilink};
+use wikilink::{handle_preprocessing, AutoTitle};
 
 use clap::{App, Arg, SubCommand};
 use mdbook::errors::Error;
 
 pub fn make_app() -> App<'static, 'static> {
-    App::new("mdbook-wikilink")
-        .about("A mdbook preprocessor to support wikilinks")
+    App::new("wikilink")
+        .about("A mdbook preprocessor which does autotitle")
         .subcommand(
             SubCommand::with_name("supports")
                 .arg(Arg::with_name("renderer").required(true))
@@ -16,7 +16,7 @@ pub fn make_app() -> App<'static, 'static> {
 fn main() -> Result<(), Error> {
     let matches = make_app().get_matches();
 
-    let preprocessor = Wikilink::new();
+    let preprocessor = AutoTitle::new();
 
     if let Some(_sub_args) = matches.subcommand_matches("supports") {
         Ok(())
