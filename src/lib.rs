@@ -75,13 +75,18 @@ impl Preprocessor for AutoTitle {
                 chapter.content = self
                     .re
                     .replace_all(&chapter.content, |it: &Captures| {
-                        let file = it.get(1).unwrap().as_str().trim();
-                        let title = it.get(2).map(|it| it.as_str().trim());
+                        let link_internals = it.get(1).unwrap().as_str().trim().to_string();
+                        let file = root.to_owned() + "/" + &link_internals;
 
-                        let file = root.to_owned() + "/" + file;
-                        let title = title.unwrap_or_else(|| chapters.get(&file).unwrap().trim());
+                        let title = it.get(2)
+                                    .map(|it| it.as_str().trim())
+                                    .unwrap_or_else(|| chapters.get(&file).unwrap_or(&link_internals));
 
-                        format!("[{}]({}.md)", title, file)
+                        if title == link_internals {
+                            link_internals
+                        } else {
+                            format!("[{}]({}.md)", title, file)
+                        }
                     })
                     .to_string();
             }
