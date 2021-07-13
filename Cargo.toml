@@ -1,7 +1,7 @@
 [package]
 name = "mdbook-wikilink"
 version = "0.2.0"
-authors = ["Leo Silva Souza <leovano@protonmail.com>"]
+authors = ["Victor Freire <victor@freire.dev.br>", "Leo Silva Souza <leovano@protonmail.com>", "Knut Magnus Aasrud <km@aasrud.com>"]
 edition = "2018"
 
 [dependencies]
