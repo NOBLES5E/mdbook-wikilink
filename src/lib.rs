@@ -1,8 +1,8 @@
-use mdbook::{book::Book, errors::Error, preprocess::PreprocessorContext};
 use mdbook::{
-    book::Chapter,
-    preprocess::{CmdPreprocessor, Preprocessor},
+    book::{Chapter, Book},
+    preprocess::{CmdPreprocessor, Preprocessor, PreprocessorContext},
     BookItem,
+    errors::Error,
 };
 use regex::{Captures, Regex};
 use std::{collections::HashMap, io};
@@ -40,24 +40,15 @@ fn chapter(it: &BookItem) -> Option<&Chapter> {
     }
 }
 
-pub struct AutoTitle {
-    re: Regex,
-}
+pub struct WikiLinks;
 
-impl AutoTitle {
-    pub fn new() -> AutoTitle {
-        AutoTitle {
-            re: Regex::new(r"\[\[([^\]\|]+)(?:\|([^\]]+))?\]\]").unwrap(),
-        }
-    }
-}
-
-impl Preprocessor for AutoTitle {
+impl Preprocessor for WikiLinks {
     fn name(&self) -> &str {
-        "autotitle-preprocessor"
+        "wikilink-preprocessor"
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
+        let re = Regex::new(r"\[\[([^\]\|]+)(?:\|([^\]]+))?\]\]").unwrap();
         let root = ".";
 
         let chapters = book
@@ -75,8 +66,7 @@ impl Preprocessor for AutoTitle {
 
         book.for_each_mut(|it| {
             if let BookItem::Chapter(chapter) = it {
-                chapter.content = self
-                    .re
+                chapter.content = re
                     .replace_all(&chapter.content, |it: &Captures| -> String {
                         let link_internals = it.get(1).unwrap().as_str().trim().to_string();
                         let file = root.to_owned() + "/" + &link_internals;
