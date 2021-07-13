@@ -1,11 +1,8 @@
 [package]
 name = "mdbook-wikilink"
-version = "0.1.4"
-authors = ["Leo Silva Souza <leovano@protonmail.com>"]
+version = "0.2.0"
+authors = ["Victor Freire <victor@freire.dev.br>", "Leo Silva Souza <leovano@protonmail.com>", "Knut Magnus Aasrud <km@aasrud.com>"]
 edition = "2018"
-
-[lib]
-name = "wikilink"
 
 [dependencies]
 clap = "*"

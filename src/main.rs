@@ -1,4 +1,4 @@
-use wikilink::{handle_preprocessing, AutoTitle};
+use mdbook_wikilink::{handle_preprocessing, WikiLinks};
 
 use clap::{App, Arg, SubCommand};
 use mdbook::errors::Error;
@@ -16,11 +16,9 @@ pub fn make_app() -> App<'static, 'static> {
 fn main() -> Result<(), Error> {
     let matches = make_app().get_matches();
 
-    let preprocessor = AutoTitle::new();
-
     if let Some(_sub_args) = matches.subcommand_matches("supports") {
         Ok(())
     } else {
-        handle_preprocessing(preprocessor)
+        handle_preprocessing(WikiLinks)
     }
 }
