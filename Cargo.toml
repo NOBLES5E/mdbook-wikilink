@@ -4,9 +4,6 @@ version = "0.1.4"
 authors = ["Leo Silva Souza <leovano@protonmail.com>"]
 edition = "2018"
 
-[lib]
-name = "wikilink"
-
 [dependencies]
 clap = "*"
 mdbook = "0.4.10"
