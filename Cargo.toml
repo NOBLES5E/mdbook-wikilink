@@ -9,7 +9,8 @@ name = "wikilink"
 
 [dependencies]
 clap = "*"
-mdbook = "*"
+mdbook = "0.4.10"
 regex = "*"
 serde = "*"
 serde_json = "*"
+urlencoding = "2.0.0"

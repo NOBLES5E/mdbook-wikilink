@@ -6,6 +6,7 @@ use mdbook::{
 };
 use regex::{Captures, Regex};
 use std::{collections::HashMap, io};
+use urlencoding::encode;
 
 pub fn handle_preprocessing(pre: impl Preprocessor) -> Result<(), Error> {
     // let mut input = String::new();
@@ -64,7 +65,9 @@ impl Preprocessor for AutoTitle {
             .filter_map(chapter)
             .filter_map(|it| {
                 let path = it.path.as_ref()?.file_stem().unwrap().to_str().unwrap();
-                Some((root.to_owned() + "/" + path, it.name.clone()))
+                let key = root.to_owned() + "/" + path;
+
+                Some((key, it.name.clone()))
             })
             .collect::<HashMap<_, _>>();
 
@@ -74,19 +77,21 @@ impl Preprocessor for AutoTitle {
             if let BookItem::Chapter(chapter) = it {
                 chapter.content = self
                     .re
-                    .replace_all(&chapter.content, |it: &Captures| {
+                    .replace_all(&chapter.content, |it: &Captures| -> String {
                         let link_internals = it.get(1).unwrap().as_str().trim().to_string();
                         let file = root.to_owned() + "/" + &link_internals;
 
-                        let title = it.get(2)
-                                    .map(|it| it.as_str().trim())
-                                    .unwrap_or_else(|| chapters.get(&file).unwrap_or(&link_internals));
+                        let link = it.get(2)
+                                    .map(|it| it.as_str().trim().to_string())
+                                    .unwrap_or_else(|| { 
+                                        if let Some(name) = chapters.get(&file) {
+                                            format!("[{}]({}.md)", name, encode(&file))
+                                        } else {
+                                            link_internals
+                                        }
+                                    });
 
-                        if title == link_internals {
-                            link_internals
-                        } else {
-                            format!("[{}]({}.md)", title, file)
-                        }
+                        link
                     })
                     .to_string();
             }
