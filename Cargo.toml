@@ -1,8 +1,13 @@
 [package]
 name = "mdbook-wikilink"
+description = "Support for wikilinks on mdBook."
+homepage = "https://github.com/mdzk-rs/mdbook-wikilink"
+repository = "https://github.com/mdzk-rs/mdbook-wikilink"
 version = "0.2.0"
 authors = ["Victor Freire <victor@freire.dev.br>", "Leo Silva Souza <leovano@protonmail.com>", "Knut Magnus Aasrud <km@aasrud.com>"]
 edition = "2018"
+license = "MIT"
+readme = "README.md"
 
 [dependencies]
 clap = "*"
