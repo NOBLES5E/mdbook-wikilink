@@ -14,9 +14,9 @@ include = [
 ]
 
 [dependencies]
-clap = "*"
+clap = "2.33.3"
 mdbook = "0.4.10"
-regex = "*"
-serde = "*"
-serde_json = "*"
+regex = "1.4.3"
+serde = "1.0.123"
+serde_json = "1.0.61"
 urlencoding = "2.0.0"
