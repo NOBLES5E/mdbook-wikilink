@@ -8,6 +8,10 @@ authors = ["Victor Freire <victor@freire.dev.br>", "Leo Silva Souza <leovano@pro
 edition = "2018"
 license = "MIT"
 readme = "README.md"
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+]
 
 [dependencies]
 clap = "*"
