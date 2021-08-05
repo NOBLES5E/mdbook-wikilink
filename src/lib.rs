@@ -57,8 +57,7 @@ impl Preprocessor for WikiLinks {
             .filter_map(|it| {
                 let path = it.path.as_ref()?.file_stem().unwrap().to_str().unwrap();
                 let key = root.to_owned() + "/" + path;
-
-                Some((key, it.name.clone()))
+                Some((key, it.clone()))
             })
             .collect::<HashMap<_, _>>();
 
@@ -72,14 +71,14 @@ impl Preprocessor for WikiLinks {
                         let file = root.to_owned() + "/" + &link_internals;
 
                         let link = it.get(2)
-                                    .map(|it| it.as_str().trim().to_string())
-                                    .unwrap_or_else(|| { 
-                                        if let Some(name) = chapters.get(&file) {
-                                            format!("[{}]({}.md)", name, encode(&file))
-                                        } else {
-                                            link_internals
-                                        }
-                                    });
+                            .map(|it| it.as_str().trim().to_string())
+                            .unwrap_or_else(|| {
+                                if let Some(chapter) = chapters.get(&file) {
+                                    format!("[{}](/{})", chapter.name, encode(chapter.path.as_ref().unwrap().to_string_lossy().to_string().as_str()))
+                                } else {
+                                    panic!("{} not found", link_internals)
+                                }
+                            });
 
                         link
                     })
