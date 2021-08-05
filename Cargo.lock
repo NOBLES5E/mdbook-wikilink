@@ -802,6 +802,7 @@ version = "0.2.0"
 dependencies = [
  "clap",
  "mdbook",
+ "pathdiff",
  "regex",
  "serde",
  "serde_json",
@@ -953,6 +954,12 @@ checksum = "7c283bf0114efea9e42f1a60edea9859e8c47528eae09d01df4b29c1e489cc48"
 dependencies = [
  "winapi 0.3.9",
 ]
+
+[[package]]
+name = "pathdiff"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "877630b3de15c0b64cc52f659345724fbf6bdad9bd9566699fc53688f3c34a34"
 
 [[package]]
 name = "percent-encoding"

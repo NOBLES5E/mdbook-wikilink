@@ -73,10 +73,13 @@ impl Preprocessor for WikiLinks {
                         let link = it.get(2)
                             .map(|it| it.as_str().trim().to_string())
                             .unwrap_or_else(|| {
-                                if let Some(chapter) = chapters.get(&file) {
-                                    format!("[{}](/{})", chapter.name,
-                                        chapter.path.as_ref().unwrap().to_string_lossy().to_string().split("/")
-                                            .map(encode).collect::<Vec<_>>().join("/"))
+                                if let Some(linked_chapter) = chapters.get(&file) {
+                                    let url = pathdiff::diff_paths(
+                                        linked_chapter.path.as_ref().unwrap(),
+                                        chapter.path.as_ref().unwrap().parent().unwrap(),
+                                    ).unwrap().to_string_lossy().to_string();
+                                    format!("[{}]({})", linked_chapter.name,
+                                            url.split("/").map(encode).collect::<Vec<_>>().join("/"))
                                 } else {
                                     panic!("{} not found", link_internals)
                                 }
