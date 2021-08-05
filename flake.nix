@@ -36,6 +36,7 @@
           devShell = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
               rustc
+			  rustfmt
               cargo
               rust-analyzer
             ];
