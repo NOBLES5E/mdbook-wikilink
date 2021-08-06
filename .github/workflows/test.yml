@@ -1,0 +1,20 @@
+name: Build
+
+on: [push]
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          default: true
+
+      - name: Run tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test

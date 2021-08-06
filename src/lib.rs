@@ -7,6 +7,8 @@ use mdbook::{
 use regex::{Captures, Regex};
 use std::{collections::HashMap, io};
 
+static RE_EXPR: &str = r"\[\[(?P<link>[^\]\|]+)(?:\|(?P<title>[^\]]+))?\]\]";
+
 pub fn handle_preprocessing(pre: impl Preprocessor) -> Result<(), Error> {
     let (ctx, book) = CmdPreprocessor::parse_input(io::stdin())?;
 
@@ -49,7 +51,7 @@ impl Preprocessor for WikiLinks {
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
-        let re = Regex::new(r"\[\[([^\]\|]+)(?:\|([^\]]+))?\]\]").unwrap();
+        let re = Regex::new(RE_EXPR).unwrap();
 
         let chapters = book
             .iter()
@@ -89,5 +91,59 @@ impl Preprocessor for WikiLinks {
         });
 
         Ok(book)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{normalize_string, RE_EXPR};
+    use regex::Regex;
+
+    #[test]
+    fn normalize_string_symbols() {
+        let cases = [
+            ("/Folder/My File <>.md", "/Folder/My%20File%20&lt;&gt;.md"),
+            (
+                "/👩‍🌾 Gardening Tips/🪴 Sowing<Your>Garden/🎯  Create Custom Dashboards.md", 
+                "/👩‍🌾%20Gardening%20Tips/🪴%20Sowing&lt;Your&gt;Garden/🎯%20%20Create%20Custom%20Dashboards.md"
+            ),
+        ];
+
+        for (case, expected) in cases {
+            assert_eq!(normalize_string(case), expected)
+        }
+    }
+
+    #[test]
+    fn extract_link_regex() {
+        let re = Regex::new(RE_EXPR).unwrap();
+        let cases = [
+            ("[[Link]]", "Link"),
+            ("[[🪴 Sowing<Your>Garden]]", "🪴 Sowing<Your>Garden"),
+            (
+                "[[/Templates/🪴 Sowing<Your>Garden]]",
+                "/Templates/🪴 Sowing<Your>Garden",
+            ),
+        ];
+
+        for (case, expected) in cases {
+            let got = re.captures(case).unwrap().name("link").unwrap().as_str();
+            assert_eq!(got.trim(), expected);
+        }
+    }
+
+    #[test]
+    fn extract_title_regex() {
+        let re = Regex::new(RE_EXPR).unwrap();
+        let cases = [
+            ("[[Link | My New Link]]", "My New Link"),
+            ("[[🪴 Sowing<Your>Garden | 🪴 Emoji Link]]", "🪴 Emoji Link"),
+            ("[[🪴 Sowing<Your>Garden | 🪴/Emoji/Link]]", "🪴/Emoji/Link"),
+        ];
+
+        for (case, expected) in cases {
+            let got = re.captures(case).unwrap().name("title").unwrap().as_str();
+            assert_eq!(got.trim(), expected)
+        }
     }
 }
