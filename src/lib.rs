@@ -1,3 +1,4 @@
+use lazy_regex::{lazy_regex, Lazy};
 use mdbook::{
     book::{Book, Chapter},
     errors::Error,
@@ -7,7 +8,8 @@ use mdbook::{
 use regex::{Captures, Regex};
 use std::{collections::HashMap, io};
 
-static RE_EXPR: &str = r"\[\[(?P<link>[^\]\|]+)(?:\|(?P<title>[^\]]+))?\]\]";
+static WIKILINK_REGEX: Lazy<Regex> =
+    lazy_regex!(r"\[\[(?P<link>[^\]\|]+)(?:\|(?P<title>[^\]]+))?\]\]");
 
 pub fn handle_preprocessing(pre: impl Preprocessor) -> Result<(), Error> {
     let (ctx, book) = CmdPreprocessor::parse_input(io::stdin())?;
@@ -51,8 +53,6 @@ impl Preprocessor for WikiLinks {
     }
 
     fn run(&self, _ctx: &PreprocessorContext, mut book: Book) -> Result<Book, Error> {
-        let re = Regex::new(RE_EXPR).unwrap();
-
         let chapters = book
             .iter()
             .filter_map(chapter)
@@ -68,7 +68,7 @@ impl Preprocessor for WikiLinks {
 
         book.for_each_mut(|it| {
             if let BookItem::Chapter(chapter) = it {
-                chapter.content = re
+                chapter.content = WIKILINK_REGEX
                     .replace_all(&chapter.content, |it: &Captures| -> String {
                         let link_internals = normalize_string(it.get(1).unwrap().as_str());
                         let file = link_internals.to_string();
@@ -96,8 +96,7 @@ impl Preprocessor for WikiLinks {
 
 #[cfg(test)]
 mod tests {
-    use crate::{normalize_string, RE_EXPR};
-    use regex::Regex;
+    use crate::{normalize_string, WIKILINK_REGEX};
 
     #[test]
     fn normalize_string_symbols() {
@@ -116,7 +115,6 @@ mod tests {
 
     #[test]
     fn extract_link_regex() {
-        let re = Regex::new(RE_EXPR).unwrap();
         let cases = [
             ("[[Link]]", "Link"),
             ("[[🪴 Sowing<Your>Garden]]", "🪴 Sowing<Your>Garden"),
@@ -127,14 +125,18 @@ mod tests {
         ];
 
         for (case, expected) in cases {
-            let got = re.captures(case).unwrap().name("link").unwrap().as_str();
+            let got = WIKILINK_REGEX
+                .captures(case)
+                .unwrap()
+                .name("link")
+                .unwrap()
+                .as_str();
             assert_eq!(got.trim(), expected);
         }
     }
 
     #[test]
     fn extract_title_regex() {
-        let re = Regex::new(RE_EXPR).unwrap();
         let cases = [
             ("[[Link | My New Link]]", "My New Link"),
             ("[[🪴 Sowing<Your>Garden | 🪴 Emoji Link]]", "🪴 Emoji Link"),
@@ -142,7 +144,12 @@ mod tests {
         ];
 
         for (case, expected) in cases {
-            let got = re.captures(case).unwrap().name("title").unwrap().as_str();
+            let got = WIKILINK_REGEX
+                .captures(case)
+                .unwrap()
+                .name("title")
+                .unwrap()
+                .as_str();
             assert_eq!(got.trim(), expected)
         }
     }
