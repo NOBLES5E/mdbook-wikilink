@@ -70,21 +70,25 @@ impl Preprocessor for WikiLinks {
             if let BookItem::Chapter(chapter) = it {
                 chapter.content = WIKILINK_REGEX
                     .replace_all(&chapter.content, |it: &Captures| -> String {
-                        let link_internals = normalize_string(it.get(1).unwrap().as_str());
-                        let file = link_internals.to_string();
+                        let link = normalize_string(it.name("link").unwrap().as_str().trim());
+                        let file = link.to_string();
 
-                        let link = it
-                            .get(2)
-                            .map(|it| it.as_str().trim().to_string())
+                        let markdown = it
+                            .name("title")
+                            .map(|it| {
+                                let title = it.as_str().trim().to_string();
+
+                                format!("[{}](</{}.md>)", title, link)
+                            })
                             .unwrap_or_else(|| {
                                 if let Some(name) = chapters.get(&file) {
                                     format!("[{}](</{}.md>)", name, &file)
                                 } else {
-                                    link_internals
+                                    link
                                 }
                             });
 
-                        link
+                        markdown
                     })
                     .to_string();
             }
