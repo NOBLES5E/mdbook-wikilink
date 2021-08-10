@@ -112,8 +112,8 @@ mod tests {
             ),
         ];
 
-        for (case, expected) in cases {
-            assert_eq!(normalize_string(case), expected)
+        for (case, expected) in &cases {
+            assert_eq!(normalize_string(case), *expected)
         }
     }
 
@@ -128,14 +128,14 @@ mod tests {
             ),
         ];
 
-        for (case, expected) in cases {
+        for (case, expected) in &cases {
             let got = WIKILINK_REGEX
                 .captures(case)
                 .unwrap()
                 .name("link")
                 .unwrap()
                 .as_str();
-            assert_eq!(got.trim(), expected);
+            assert_eq!(got.trim(), *expected);
         }
     }
 
@@ -147,14 +147,14 @@ mod tests {
             ("[[🪴 Sowing<Your>Garden | 🪴/Emoji/Link]]", "🪴/Emoji/Link"),
         ];
 
-        for (case, expected) in cases {
+        for (case, expected) in &cases {
             let got = WIKILINK_REGEX
                 .captures(case)
                 .unwrap()
                 .name("title")
                 .unwrap()
                 .as_str();
-            assert_eq!(got.trim(), expected)
+            assert_eq!(got.trim(), *expected)
         }
     }
 }
